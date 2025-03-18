@@ -1,41 +1,108 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;400;700;900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
     <title>Amigo Secreto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #app {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        ul {
+            text-align: left;
+            margin-top: 20px;
+        }
+    </style>
 </head>
-
 <body>
-    <main class="main-content">
-        <header class="header-banner">
-            <h1 class="main-title">Amigo Secreto</h1>
-            <img src="assets/amigo-secreto.png" alt="Imagen representativa de amigo secreto">
-        </header>
-        
-        <section class="input-section">
-            <h2 class="section-title">Digite el nombre de sus amigos</h2>
-            <div class="input-wrapper">
-                <input type="text" id="amigo" class="input-name" placeholder="Escribe un nombre">
-                <button class="button-add" onclick="agregarAmigo()">Añadir</button>
-            </div>
-           
-            <ul id="listaAmigos" class="name-list" aria-labelledby="listaAmigos" role="list"></ul>
-            <ul id="resultado" class="result-list" aria-live="polite"></ul>
+    <div id="app">
+        <h2>Amigo Secreto 🎁</h2>
+        <input type="text" id="nameInput" placeholder="Añadir nombre" />
+        <button onclick="addParticipant()">Agregar</button>
+        <ul id="participants"></ul>
+        <button onclick="drawNames()">Sortear</button>
+        <h3>Resultados:</h3>
+        <ul id="results"></ul>
+    </div>
 
-            <div class="button-container">
-                <button class="button-draw" onclick="sortearAmigo()" aria-label="Sortear amigo secreto">
-                    <img src="assets/play_circle_outline.png" alt="Ícono para sortear">
-                    Sortear amigo
-                </button>
-            </div>
-        </section>
-    </main>
+    <script>
+        let participants = [];
 
-    <script src="app.js" defer></script>
+        function addParticipant() {
+            const nameInput = document.getElementById('nameInput');
+            const name = nameInput.value.trim();
+            if (name && !participants.includes(name)) {
+                participants.push(name);
+                updateParticipantList();
+                nameInput.value = '';
+            }
+        }
+
+        function updateParticipantList() {
+            const list = document.getElementById('participants');
+            list.innerHTML = '';
+            participants.forEach(name => {
+                const li = document.createElement('li');
+                li.textContent = name;
+                list.appendChild(li);
+            });
+        }
+
+        function drawNames() {
+            if (participants.length < 2) {
+                alert('Debe haber al menos 2 participantes.');
+                return;
+            }
+
+            let shuffled = [...participants];
+            do {
+                shuffled = shuffled.sort(() => Math.random() - 0.5);
+            } while (!isValidShuffle(shuffled));
+            
+            displayResults(shuffled);
+        }
+
+        function isValidShuffle(shuffled) {
+            for (let i = 0; i < participants.length; i++) {
+                if (participants[i] === shuffled[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function displayResults(shuffled) {
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+            for (let i = 0; i < participants.length; i++) {
+                const li = document.createElement('li');
+                li.textContent = `${participants[i]} → ${shuffled[i]}`;
+                results.appendChild(li);
+            }
+        }
+    </script>
 </body>
 </html>
